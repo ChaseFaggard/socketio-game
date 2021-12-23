@@ -1,0 +1,14 @@
+<div class="container" *ngIf="display">
+    <h1>Fruit-Escape.io</h1>
+    <div class="name" [ngClass]="{'error': formError.name}">
+        <i class="fa fa-tags"></i>
+        <input [(ngModel)]="name" placeholder="Username. . ." (keyup)="checkNameError()"/>
+    </div>
+    <br>
+    <button (click)="createNewLobby()">Create new lobby</button>
+    <h3>or</h3>
+    <div class="join-lobby" [ngClass]="{'error': formError.room}">
+        <input [(ngModel)]="room" placeholder="Lobby Code. . ." (keyup)="checkRoomError()" (keydown.enter)="joinLobby()"/>
+        <button (click)="joinLobby()">Join</button>
+    </div>
+</div>

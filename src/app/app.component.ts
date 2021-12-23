@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { State } from './state';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,14 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'client';
+
+  @Input() state:State = State.HOME
+
+  get State() { return State }
+
+  play() {
+    this.state = State.GAME 
+  }
+
+
 }

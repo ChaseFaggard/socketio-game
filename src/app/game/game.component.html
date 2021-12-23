@@ -1,0 +1,20 @@
+<div [hidden]="!gameJoined">
+    <div class="container">
+        <div class="header" [ngStyle]="{'width.px': width}">
+            <h1>Fruit-Escape.io</h1>
+            <h1>Players: {{roomCount}}</h1>
+            <h1 class="lobby">Lobby: {{room}}</h1>
+            <button *ngIf="!started && isHost()" (click)="startGame()" [ngClass]="{'disabled': roomCount < 2}">Start</button>
+            <button *ngIf="gameOver && isHost()" (click)="startGame()" [ngClass]="{'disabled': roomCount < 2}">Restart</button>
+        </div>
+        <canvas
+        #game
+        height={{height}}
+        width={{width}}
+        >
+        </canvas>
+    </div>
+</div>
+
+
+
