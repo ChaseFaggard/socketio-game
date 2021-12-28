@@ -1,4 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener, AfterViewInit } from '@angular/core'
+import { environment } from 'src/environments/environment'
 import io from 'socket.io-client'
 
 @Component({
@@ -31,6 +32,7 @@ export class GameComponent implements OnInit, AfterViewInit {
   public downPressed:boolean = false
 
   public backgroundImg = new Image()
+  public showCopy: boolean = false
 
   public fruit:HTMLImageElement[] = [
     new Image(),
@@ -51,7 +53,7 @@ export class GameComponent implements OnInit, AfterViewInit {
     //Load canvas
     this.ctx = this.gameCanvas.nativeElement.getContext("2d") 
     // Load images
-    this.backgroundImg.src = `../../assets/background.jpeg`
+    //this.backgroundImg.src = `../../assets/background.jpeg`
 
     this.fruit[0].src = `../../assets/fruit/apple.png`
     this.fruit[1].src = `../../assets/fruit/blueberry.png`
@@ -74,7 +76,9 @@ export class GameComponent implements OnInit, AfterViewInit {
     this.name = event.name
     this.room = event.room
 
-    this.socket = io('http://localhost:3000')
+    const server_url = environment.production ? 'https://fruitescape-server.herokuapp.com' : 'http://localhost:3000'
+    console.log('Connecting to server on: ' + server_url)
+    this.socket = io(server_url)
 
     this.socket.emit('join', {
       name: this.name,
@@ -224,6 +228,22 @@ export class GameComponent implements OnInit, AfterViewInit {
     if(direction && this.gameJoined) {
       this.socket.emit('keyup', direction)
     }
+  }
+
+  copy(str: string): void {
+    let listener = (e: ClipboardEvent) => {
+      e.clipboardData!.setData('text/plain', (str));
+      e.preventDefault();
+    };
+
+    document.addEventListener('copy', listener);
+    document.execCommand('copy');
+    document.removeEventListener('copy', listener);
+
+    this.showCopy = true
+    setTimeout(() => {
+      this.showCopy = false
+    }, 700)
   }
 
 }

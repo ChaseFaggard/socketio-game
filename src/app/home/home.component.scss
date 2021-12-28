@@ -1,5 +1,13 @@
 $border-radius: 5px;
 $btn-color: rgb(188, 99, 196);
+canvas {
+    &.backgroundCanvas {
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+    }
+}
 .container {
     background: white;
     position: absolute;
@@ -9,9 +17,12 @@ $btn-color: rgb(188, 99, 196);
     text-align: center;
     box-shadow: rgba(170, 171, 172, 0.3) 0px 0px 0px 1px;
     padding: 100px;
+    background: white;
     h1 {
         margin-top: 0;
         margin-bottom: 50px;
+        background: white;
+        padding: 10px 20px;
     }
     button {
         font-size: 17px;

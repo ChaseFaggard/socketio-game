@@ -1,3 +1,11 @@
+<canvas 
+#backgroundCanvas
+*ngIf="display"
+class="backgroundCanvas"
+height={{height}}
+width={{width}}
+>
+</canvas>
 <div class="container" *ngIf="display">
     <h1>Fruit-Escape.io</h1>
     <div class="name" [ngClass]="{'error': formError.name}">
