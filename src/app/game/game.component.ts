@@ -77,7 +77,6 @@ export class GameComponent implements OnInit, AfterViewInit {
     this.room = event.room
 
     const server_url = environment.production ? 'https://fruitescape-server.herokuapp.com' : 'http://localhost:3000'
-    console.log('Connecting to server on: ' + server_url)
     this.socket = io(server_url)
 
     this.socket.emit('join', {
