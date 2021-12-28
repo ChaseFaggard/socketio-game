@@ -86,6 +86,7 @@ export class GameComponent implements OnInit, AfterViewInit {
     })
 
     this.socketService.getGame().subscribe((game: Game) => {
+      console.log(game)
       this.roomCount = game.playerCount
       this.height = game.height
       this.width = game.width
