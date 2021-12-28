@@ -1,6 +1,8 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener, AfterViewInit } from '@angular/core'
 import { environment } from 'src/environments/environment'
 import io from 'socket.io-client'
+import { Game, Player } from '../Game'
+import { SocketioService } from '../socketio.service'
 
 @Component({
   selector: 'game',
@@ -45,7 +47,7 @@ export class GameComponent implements OnInit, AfterViewInit {
   public height = 0
   public width = 0
 
-  constructor() { }
+  constructor(private socketService: SocketioService) { }
 
   ngOnInit(): void { }
 
@@ -63,7 +65,7 @@ export class GameComponent implements OnInit, AfterViewInit {
   }
 
   startGame(): void { 
-    if(this.roomCount > 1) this.socket.emit('start') 
+    if(this.roomCount > 1) this.socketService.start()
   }
 
   isHost(): boolean { return this.pid == this.hostid }
@@ -76,21 +78,15 @@ export class GameComponent implements OnInit, AfterViewInit {
     this.name = event.name
     this.room = event.room
 
-    const server_url = environment.production ? 'https://fruitescape-server.herokuapp.com' : 'http://localhost:3000'
-    this.socket = io(server_url)
+    this.socketService.joinLobby(this.name, this.room)
 
-    this.socket.emit('join', {
-      name: this.name,
-      room: this.room
-    })
-
-    // Get player id back from server
-    this.socket.on('startinfo', (data:any) => { 
+    this.socketService.getStartInfo().subscribe((data: any) => {
       this.pid = data.pid
       this.hostid = data.hostid
     })
 
-    this.socket.on('gameState', (game: Game) => {
+    this.socketService.getGame().subscribe((game: Game) => {
+      this.roomCount = game.playerCount
       this.height = game.height
       this.width = game.width
       this.started = game.started
@@ -144,10 +140,6 @@ export class GameComponent implements OnInit, AfterViewInit {
       }
     })
 
-    this.socket.on('roomCount', (roomCount:number) => {
-      this.roomCount = roomCount
-    })
-
   }
 
   drawPlayer = (key:string, player:Player, game:Game) => {
@@ -169,66 +161,44 @@ export class GameComponent implements OnInit, AfterViewInit {
 
   @HostListener('window:keydown', (['$event']))
   move(e: KeyboardEvent) {
-    let direction = ''
-    switch(e.key) {
-      case 'A':
-      case 'a':
-      case 'ArrowLeft':
-        direction = 'left'
-        break
-      case 'D':
-      case 'd':
-      case 'ArrowRight':
-        direction = 'right'
-        break
-      case 'W':
-      case 'w':
-      case 'ArrowUp':
-        direction = 'up'
-        break
-      case 'S':
-      case 's':
-      case 'ArrowDown':
-        direction = 'down'
-        break
-      default: 
-    }
-    if(direction && this.gameJoined) {
-      this.socket.emit('keydown', direction)
-    }
+    if(this.gameJoined) {
+      const direction = this.getDirectionFromKey(e.key)
+      if(direction) { this.socketService.keyDown(direction) }
+    } 
   }
 
   @HostListener('window:keyup', (['$event']))
   stop(e: KeyboardEvent) {
-    let direction = ''
-    switch(e.key) {
+    if(this.gameJoined) {
+      const direction = this.getDirectionFromKey(e.key)
+      if(direction) { this.socketService.keyUp(direction) }
+    } 
+  }
+
+  getDirectionFromKey(key: string): string {
+    switch(key) {
       case 'A':
       case 'a':
       case 'ArrowLeft':
-        direction = 'left'
-        break
+        return 'left'
       case 'D':
       case 'd':
       case 'ArrowRight':
-        direction = 'right'
-        break
+        return 'right'
       case 'W':
       case 'w':
       case 'ArrowUp':
-        direction = 'up'
-        break
+        return 'up'
       case 'S':
       case 's':
       case 'ArrowDown':
-        direction = 'down'
-        break
+        return 'down'
       default: 
-    }
-    if(direction && this.gameJoined) {
-      this.socket.emit('keyup', direction)
+        return ''
     }
   }
 
+  /* Copys text to clipboard */
   copy(str: string): void {
     let listener = (e: ClipboardEvent) => {
       e.clipboardData!.setData('text/plain', (str));
@@ -245,40 +215,4 @@ export class GameComponent implements OnInit, AfterViewInit {
     }, 700)
   }
 
-}
-
-type MovingObject = {
-  position: Position
-  speed: number
-}
-
-type Position = {
-  x: number
-  y: number
-}
-
-interface Player extends MovingObject { 
-  name: string
-  color: string
-  radius: number
-  alive: boolean
-}
-
-interface Item extends MovingObject { 
-  id: number,
-  width: number,
-  height: number
-}
-
-interface Game {
-  host: string
-  players: Player[]
-  items: Item[]
-  width: number
-  height: number
-  started: boolean,
-  startTimestamp: number,
-  countDown: number,
-  gameOver: boolean,
-  winner: string
 }

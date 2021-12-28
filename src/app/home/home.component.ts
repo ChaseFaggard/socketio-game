@@ -1,4 +1,7 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core'
+import { Item } from '../Game'
+import { SocketioService } from '../socketio.service'
+import { Game } from '../Game'
 
 @Component({
   selector: 'home',
@@ -37,7 +40,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     room: false
   }
 
-  constructor() { }
+  constructor(private socketService: SocketioService) { }
 
   ngOnInit(): void { }
 
@@ -149,22 +152,4 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.height = window.innerHeight
   }
 
-}
-
-
-
-type MovingObject = {
-  position: Position
-  speed: number
-}
-
-type Position = {
-  x: number
-  y: number
-}
-
-interface Item extends MovingObject { 
-  id: number,
-  width: number,
-  height: number
 }
