@@ -58,7 +58,7 @@ export class SocketioService {
 
       /* If something went wrong with the promise */
       setTimeout(() => {
-        reject(new Error("Something went wrong..."))
+        reject(new Error("Server responded too slow... it might be down or lagging behind"))
       }, 1000)
     })
   }

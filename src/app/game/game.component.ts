@@ -152,10 +152,10 @@ export class GameComponent implements OnInit, AfterViewInit {
     // Draw player name
     this.ctx.font = "13px Arial";
     this.ctx.textAlign = 'center'
-    if(!player.alive) this.ctx.fillStyle = '#D3D3D3'
-    else if(this.pid == game.host && this.pid == key) this.ctx.fillStyle = 'purple'
-    else if(this.pid == key) this.ctx.fillStyle = 'blue'
-    else this.ctx.fillStyle = 'green'
+    if(!player.alive) this.ctx.fillStyle = '#D3D3D3' // If the player is dead
+    else if(key == this.hostid) this.ctx.fillStyle = 'rgb(188, 99, 196)' // If they player is a host
+    else if(this.pid == key) this.ctx.fillStyle = 'blue' // If the player is you
+    else this.ctx.fillStyle = 'green' // Other players
     this.ctx.fillText(player.name, player.position.x, player.position.y-player.radius-4)
   }
 
