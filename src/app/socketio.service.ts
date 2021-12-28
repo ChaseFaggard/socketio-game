@@ -48,9 +48,24 @@ export class SocketioService {
 
   public keyUp = (direction: string): void => { this.socket.emit('keyup', direction) }
 
-  
+  public asyncEmit = (eventName: string, data: any): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      this.socket.emit(eventName, data)
+      this.socket.on(eventName, (result: any) => {
+        this.socket.off(eventName)
+        resolve(result)
+      })
 
+      /* If something went wrong with the promise */
+      setTimeout(() => {
+        reject(new Error("Something went wrong..."))
+      }, 1000)
+    })
+  }
 
-
+  public hasRoom = async (room: string): Promise<boolean> => {
+    const hasRoom:boolean = await this.asyncEmit('hasroom', room)
+    return hasRoom
+  }
 
 }

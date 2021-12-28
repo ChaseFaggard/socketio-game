@@ -122,14 +122,18 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
   }
 
-  joinLobby(): void {
+  async joinLobby() {
     this.checkAllErrors()
     if(!this.formError.name && !this.formError.room) {
-      this.display = false
-      this.initGame.emit({
-        name: this.name,
-        room: this.room
-      })
+      const hasRoom:boolean = await this.socketService.hasRoom(this.room)
+      if(hasRoom) {
+        this.display = false
+        this.initGame.emit({
+          name: this.name,
+          room: this.room
+        })
+      } else this.formError.room = true
+      
     }
   }
 
