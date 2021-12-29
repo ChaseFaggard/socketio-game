@@ -68,4 +68,10 @@ export class SocketioService {
     return hasRoom
   }
 
+  public getLatency = async (): Promise<number> => {
+    const startTime = new Date().getTime()
+    await this.asyncEmit('ping', null)
+    return new Date().getTime() - startTime
+  }
+
 }

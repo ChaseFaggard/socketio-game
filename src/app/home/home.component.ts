@@ -1,7 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core'
 import { Item } from '../Game'
 import { SocketioService } from '../socketio.service'
-import { Game } from '../Game'
 
 @Component({
   selector: 'home',

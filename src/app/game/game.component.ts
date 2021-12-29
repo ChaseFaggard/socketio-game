@@ -36,6 +36,8 @@ export class GameComponent implements OnInit, AfterViewInit {
   public backgroundImg = new Image()
   public showCopy: boolean = false
 
+  public latency = 0
+
   public fruit:HTMLImageElement[] = [
     new Image(),
     new Image(),
@@ -73,6 +75,9 @@ export class GameComponent implements OnInit, AfterViewInit {
   // Initalize game 
   init(event:any): void {
 
+    this.getLatency()
+    setInterval(this.getLatency, 5000)
+
     this.gameJoined = true
 
     this.name = event.name
@@ -94,11 +99,16 @@ export class GameComponent implements OnInit, AfterViewInit {
       this.hostid = game.host
       this.ctx.globalCompositeOperation = 'source-over'
       
+      // Reset canvas
       this.ctx.fillStyle = 'white'
       this.ctx.fillRect(0,0,game.width, game.height)
-      //this.ctx.drawImage(this.backgroundImg, 0, 0, game.width, game.height)
+      
+      // Draw latency text
+      this.ctx.fillStyle = 'green'
+      this.ctx.textAlign = 'right'
+      this.ctx.fillText('Latency: ' + this.latency + 'ms', this.width-15, 25)
 
-      // Render alive players (Alive items are drawn)
+      // Render dead players (Alive items are drawn)
       for(let [key,p] of Object.entries(game.players)) {
         if(!p.alive) this.drawPlayer(key, p, game)
       }
@@ -196,6 +206,10 @@ export class GameComponent implements OnInit, AfterViewInit {
       default: 
         return ''
     }
+  }
+
+  getLatency = async () => {
+    this.latency = await this.socketService.getLatency()
   }
 
   /* Copys text to clipboard */
